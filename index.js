@@ -4,7 +4,7 @@ const app = express();
 console.log("🔥 FILE STARTED");
 app.get("/", (req, res) => {
   res.json({
-    message: "Hello from Render 🚀",
+    message: "Hello from Render 🚀 New 1",
     time: new Date().toISOString(),
   });
 });
