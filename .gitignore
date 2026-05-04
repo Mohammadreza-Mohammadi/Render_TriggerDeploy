@@ -19,6 +19,7 @@ dist/
 build/
 apps
 apps/*
+create-app.js
 # Environment variables
 .env
 .env.local
