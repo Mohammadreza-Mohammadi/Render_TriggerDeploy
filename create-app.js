@@ -42,19 +42,12 @@ async function createApp(customer,customtext) {
   generateFiles(dir, customer,customtext);
 
   // 2. git branch
-  await createBranch(branch);
+  await checkoutOrCreate(branch);
   await copyToRoot(customer);
 
   // 3. commit + push
   await commitAndPush(branch);
   // 2. create folder locally linux base system
-  // execSync(`mkdir apps/${customer}`);
-
-  // 3. create deploy.js
-  execSync(`
-echo "const https = require('https');
-https.get(process.env.RENDER_DEPLOY_HOOK);" > apps/${customer}/deploy.js
-  `);
 
   // 4. create Render service
   createOrDeploy(customer, branch);
@@ -172,13 +165,7 @@ async function checkoutOrCreate(branch) {
 
   console.log("✅ Using branch:", branch);
 }
-async function createBranch(branch) {
-  console.log("🚀 Creating branch:", branch);
 
-  await checkoutOrCreate(branch);
-
-  console.log("📦 Branch created locally");
-}
 
 async function commitAndPush(branch) {
   await git.add("./*");
