@@ -9,13 +9,13 @@ const git = simpleGit();
 
 
 
-const GITHUB_TOKEN =process.env.GITHUB_TOKEN; 
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-const GITHUB_OWNER =process.env.GITHUB_OWNER;
-const GITHUB_REPO =process.env.GITHUB_REPO; 
+const GITHUB_OWNER = process.env.GITHUB_OWNER;
+const GITHUB_REPO = process.env.GITHUB_REPO;
 
 
-const RENDER_TOKEN =process.env.RENDER_TOKEN; 
+const RENDER_TOKEN = process.env.RENDER_TOKEN;
 console.log(RENDER_TOKEN);
 const res = await fetch("https://api.render.com/v1/owners", {
   headers: {
@@ -31,7 +31,7 @@ const RENDER_OWNER_ID = ownerids[0].owner.id;
 
 async function createApp(customer) {
 
-    const branch = `customer-${customer}`;
+  const branch = `customer-${customer}`;
 
   console.log("🚀 Creating app:", customer);
 
@@ -43,7 +43,7 @@ async function createApp(customer) {
 
   // 2. git branch
   await createBranch(branch);
-await copyToRoot(customer);
+  await copyToRoot(customer);
 
   // 3. commit + push
   await commitAndPush(branch);
@@ -57,6 +57,25 @@ https.get(process.env.RENDER_DEPLOY_HOOK);" > apps/${customer}/deploy.js
   `);
 
   // 4. create Render service
+  createOrDeploy(customer, branch);
+  console.log("🎉 DONE:", customer);
+}
+async function createOrDeploy(customer, branch) {
+  const serviceId = getExistingServiceId(customer);
+
+  if (serviceId) {
+    console.log("♻️ Service exists → deploying...");
+    await deployService(serviceId);
+    return;
+  }
+
+  console.log("🆕 Creating new service...");
+
+  await createRenderService(customer, branch);
+
+}
+
+async function createRenderService(customer, branch) {
   const res = await fetch("https://api.render.com/v1/services", {
     method: "POST",
     headers: {
@@ -85,12 +104,40 @@ https.get(process.env.RENDER_DEPLOY_HOOK);" > apps/${customer}/deploy.js
 
   const data = await res.json();
 
+  fs.writeFileSync(
+    `apps/${customer}/render.json`,
+    JSON.stringify({
+      serviceId: data.id
+    }, null, 2)
+  );
+
   console.log("✅ Service created:", data);
-    console.log("🎉 DONE:", customer);
 }
 
 
+function getExistingServiceId(customer) {
+  const file = `apps/${customer}/render.json`;
 
+  if (!fs.existsSync(file)) return null;
+
+  const data = JSON.parse(fs.readFileSync(file, "utf-8"));
+  return data.serviceId;
+}
+async function deployService(serviceId) {
+  const res = await fetch(
+    `https://api.render.com/v1/services/${serviceId}/deploys`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RENDER_TOKEN}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  console.log("🚀 Deploy triggered:", data);
+}
 
 async function copyToRoot(customer) {
   const src = path.join("apps", customer);
@@ -103,10 +150,32 @@ async function copyToRoot(customer) {
 
   console.log("📦 Copied apps content to root");
 }
+async function branchExists(branch) {
+  const branches = await git.branch(["-a"]);
+  return branches.all.includes(`remotes/origin/${branch}`);
+}
+async function checkoutOrCreate(branch) {
+  const exists = await branchExists(branch);
+
+  if (exists) {
+    console.log("♻️ Branch exists → checking out");
+
+    await git.fetch("origin", branch);
+    await git.checkout(branch);
+
+  } else {
+    console.log("🆕 Branch does not exist → creating");
+
+    await git.checkoutLocalBranch(branch);
+    await git.push("origin", branch);
+  }
+
+  console.log("✅ Using branch:", branch);
+}
 async function createBranch(branch) {
   console.log("🚀 Creating branch:", branch);
 
-  await git.checkoutLocalBranch(branch);
+  await checkoutOrCreate(branch);
 
   console.log("📦 Branch created locally");
 }
