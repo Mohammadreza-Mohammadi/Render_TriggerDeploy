@@ -26,7 +26,7 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
-pnpm-lock.yaml
+
 # IDE
 .vscode/
 .idea/
