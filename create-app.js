@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
 import { execSync } from "child_process";
-import fs from "fs";
 import path from "path";
 import simpleGit from "simple-git";
 import fs from "fs-extra";
