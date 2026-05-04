@@ -3,6 +3,8 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import simpleGit from "simple-git";
+import fs from "fs-extra";
+
 
 const git = simpleGit();
 
@@ -42,6 +44,7 @@ async function createApp(customer) {
 
   // 2. git branch
   await createBranch(branch);
+await copyToRoot(customer);
 
   // 3. commit + push
   await commitAndPush(branch);
@@ -88,6 +91,19 @@ https.get(process.env.RENDER_DEPLOY_HOOK);" > apps/${customer}/deploy.js
 }
 
 
+
+
+async function copyToRoot(customer) {
+  const src = path.join("apps", customer);
+  const dest = "."; // root repo
+
+  await fs.copy(src, dest, {
+    overwrite: true,
+    errorOnExist: false,
+  });
+
+  console.log("📦 Copied apps content to root");
+}
 async function createBranch(branch) {
   console.log("🚀 Creating branch:", branch);
 
