@@ -1,7 +1,7 @@
 const https = require("https");
 
 // اینو از Render Deploy Hook می‌گیری
-const DEPLOY_HOOK_URL =`https://api.render.com/deploy/srv-d7sgol8sfn5c73fgugg0?key=l7XYcFYfHAo`;
+const DEPLOY_HOOK_URL =process.env.DEPLOY_HOOK_URL;
 
 if (!DEPLOY_HOOK_URL) {
   console.error("❌ Missing RENDER_DEPLOY_HOOK env variable");

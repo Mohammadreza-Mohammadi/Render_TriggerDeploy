@@ -1,7 +1,9 @@
-const express = require("express");
+import express from "express";
 
 const app = express();
+
 console.log("🔥 FILE STARTED");
+
 app.get("/", (req, res) => {
   res.json({
     message: "Hello from Render 🚀 New 1",
@@ -9,7 +11,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// مهم: Render PORT
+// Render PORT
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
