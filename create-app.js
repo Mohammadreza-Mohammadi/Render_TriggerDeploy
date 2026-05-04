@@ -29,7 +29,7 @@ console.log(ownerids);
 const RENDER_OWNER_ID = ownerids[0].owner.id;
 
 
-async function createApp(customer) {
+async function createApp(customer,customtext) {
 
   const branch = `customer-${customer}`;
 
@@ -39,7 +39,7 @@ async function createApp(customer) {
   fs.mkdirSync(dir, { recursive: true });
 
   // 1. generate files
-  generateFiles(dir, customer);
+  generateFiles(dir, customer,customtext);
 
   // 2. git branch
   await createBranch(branch);
@@ -189,7 +189,7 @@ async function commitAndPush(branch) {
 }
 
 // ---------------- File Generator ----------------
-function generateFiles(dir, customer) {
+function generateFiles(dir, customer,customText) {
   // index.js
   fs.writeFileSync(
     path.join(dir, "index.js"),
@@ -199,7 +199,7 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.json({ customer: "${customer}", status: "running" });
+  res.json({ customer: "${customer} ${customText}", status: "running" });
 });
 
 const PORT = process.env.PORT || 3000;
@@ -237,4 +237,4 @@ https.get(process.env.RENDER_DEPLOY_HOOK);`
   // pnpm-lock.yaml (placeholder)
   fs.writeFileSync(path.join(dir, "pnpm-lock.yaml"), "# auto generated");
 }
-createApp(process.argv[2]);
+createApp(process.argv[2],process.argv[3] || '');
