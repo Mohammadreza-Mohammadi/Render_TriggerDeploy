@@ -1,19 +1,11 @@
-import express from "express";
+console.log("🚀 App app-1 running");
 
+const express = require("express");
 const app = express();
 
-console.log("🔥 FILE STARTED");
-
 app.get("/", (req, res) => {
-  res.json({
-    message: "Hello from Render 🚀 New 1",
-    time: new Date().toISOString(),
-  });
+  res.json({ customer: "app-1 ", status: "running" });
 });
 
-// Render PORT
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log("Running on", PORT));
