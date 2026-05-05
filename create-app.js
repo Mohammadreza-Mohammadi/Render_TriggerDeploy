@@ -100,7 +100,8 @@ async function createRenderService(customer, branch) {
   fs.writeFileSync(
     `apps/${customer}/render.json`,
     JSON.stringify({
-      serviceId: data.id
+      serviceId: data.id,
+      url:serviceDetails.url
     }, null, 2)
   );
 
