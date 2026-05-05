@@ -96,6 +96,7 @@ async function createRenderService(customer, branch) {
   });
 
   const data = await res.json();
+  console.log("✅ Service created:", data);
 
   fs.writeFileSync(
     `apps/${customer}/render.json`,
@@ -104,7 +105,6 @@ async function createRenderService(customer, branch) {
     }, null, 2)
   );
 
-  console.log("✅ Service created:", data);
 }
 
 
