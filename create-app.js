@@ -107,6 +107,7 @@ async function createRenderService(customer, branch) {
   );
 
   console.log("✅ Service created:", data);
+  console.log("✅ Service can be accessed at:", data.serviceDetails.url);
 }
 
 
