@@ -42,7 +42,7 @@ async function createApp(customer,customtext) {
   generateFiles(dir, customer,customtext);
 
   // 2. git branch
-  await checkoutOrCreate(branch);
+  await ensureBranch(branch);
   await copyToRoot(customer);
 
   // 3. commit + push
@@ -143,27 +143,23 @@ async function copyToRoot(customer) {
 
   console.log("📦 Copied apps content to root");
 }
-async function branchExists(branch) {
+async function ensureBranch(branch) {
+  const current = await git.revparse(["--abbrev-ref", "HEAD"]);
+
+  if (current.trim() === branch) {
+    console.log("♻️ Already on branch:", branch);
+    return;
+  }
+
   const branches = await git.branch(["-a"]);
-  return branches.all.includes(`remotes/origin/${branch}`);
-}
-async function checkoutOrCreate(branch) {
-  const exists = await branchExists(branch);
+  const exists = branches.all.includes(`remotes/origin/${branch}`);
 
   if (exists) {
-    console.log("♻️ Branch exists → checking out");
-
-    await git.fetch("origin", branch);
     await git.checkout(branch);
-
   } else {
-    console.log("🆕 Branch does not exist → creating");
-
     await git.checkoutLocalBranch(branch);
     await git.push("origin", branch);
   }
-
-  console.log("✅ Using branch:", branch);
 }
 
 
