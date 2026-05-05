@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.json({ customer: "app-1 ", status: "running" });
+  res.json({ customer: "app-1 Test2", status: "running" });
 });
 
 const PORT = process.env.PORT || 3000;
