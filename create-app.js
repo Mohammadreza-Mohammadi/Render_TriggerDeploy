@@ -55,6 +55,7 @@ async function createApp(customer,customtext) {
 }
 async function createOrDeploy(customer, branch) {
   const serviceId = getExistingServiceId(customer);
+  console.log(`check service id in render.json => ${serviceId}`);
 
   if (serviceId) {
     console.log("♻️ Service exists → deploying...");
@@ -101,7 +102,7 @@ async function createRenderService(customer, branch) {
     `apps/${customer}/render.json`,
     JSON.stringify({
       serviceId: data.id,
-      url:serviceDetails.url
+      url:data.serviceDetails.url
     }, null, 2)
   );
 
